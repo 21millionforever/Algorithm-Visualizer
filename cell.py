@@ -7,10 +7,12 @@ class Cell:
         self.top, self.bottom = None, None
         self.row, self.col = None, None      # 0-indexed
         self.pos_x, self.pos_y = None, None
-        self.cell_surf, self.cell_surf_rect, self.cell_rect = None, None, None
+        self.cell_surf, self.cell_surf_rect = None, None
+        # self.cell_rect = None, None, None
 
 def CreateCells(screen_height, screen_width, cell_height, cell_width, height_pad, side_pad):
     cells = list()
+    i = 0
     for row in range((screen_height - height_pad) // cell_height):
         temp = list()
         for col in range((screen_width - side_pad) // cell_width):
@@ -24,9 +26,11 @@ def CreateCells(screen_height, screen_width, cell_height, cell_width, height_pad
             c.pos_x, c.pos_y = pos_x + side_pad // 2, pos_y + height_pad // 2
 
             c.row, c.col = row, col
-            # c.cell_rect = cell_rect
             c.cell_surf, c.cell_surf_rect =  cell_surf, cell_surf_rect
+            # c.cell_rect = cell_rect
+
             temp.append(c)
+
 
         cells.append(temp)
     return cells
