@@ -9,13 +9,6 @@ HEIGHT_PAD, SIDE_PAD = 200, 200
 CELL_COLOR = (0, 100, 255)
 ROWS, COLS = 0, 0
 
-
-
-
-
-
-
-
 def main():
 
     # Initialize pygame and window
@@ -30,7 +23,8 @@ def main():
     end_point_surf = None
 
     # Obstacles
-    obstacles = list()
+    obstacles = set()
+    visited = set()
 
 
     # Visualizer status
@@ -67,7 +61,7 @@ def main():
                         starting_point_surf.fill('Red')
 
                     # Get end point
-                    if is_placing_e_point:
+                    if is_placing_e_point and not (r == s_row and c == s_col):
                         # pos_x, pos_y = event.pos[0], event.pos[1]
                         # e_row, e_col = getRowAndCol(pos_x, pos_y, SIDE_PAD, HEIGHT_PAD, CELL_WIDTH, CELL_HEIGHT)
                         e_row, e_col = r, c
@@ -75,8 +69,19 @@ def main():
                         end_point_surf.fill('Blue')
 
                     # Get obstacles
-                    # if is_placing_obstacles:
-                    #     pos_x, pos_y = event.pos[0], event.pos[1]
+                    if is_placing_obstacles and not (r == s_row and c == s_col) and not (r == e_row and c == e_col):
+                        o_row, o_col = r, c
+                        obs = cells[o_row][o_col]
+                        if (obs.row, obs.col) not in visited:
+                            obs.cell_surf.fill('Black')
+                            obstacles.add(obs)
+                            visited.add((obs.row, obs.col))
+
+
+
+
+
+
 
 
 
@@ -110,7 +115,9 @@ def main():
             drawTextOnEndPointScreen(screen)
 
         # Draw the obstacles
-
+        if len(obstacles) > 0:
+            for obs in obstacles:
+                screen.blit(obs.cell_surf, (cells[obs.row][obs.col].pos_x, cells[obs.row][obs.col].pos_y))
         # Draw the message when the user is placing obstacles
         if  is_placing_obstacles:
             drawTextOnObstacleScreen(screen)
