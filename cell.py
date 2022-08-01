@@ -6,8 +6,6 @@ class Cell:
         self.left, self.right = None, None
         self.top, self.bottom = None, None
         self.row, self.col = None, None      # 0-indexed
-        # self.pos_x, self.pos_y = None, None
-        # self.cell_rect = None, None, None
         self.cell_surf, self.cell_surf_rect = None, None
 
 def CreateCells(screen_height, screen_width, cell_height, cell_width, height_pad, side_pad):

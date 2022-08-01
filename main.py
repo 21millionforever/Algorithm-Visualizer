@@ -1,13 +1,45 @@
+import time
+
 import pygame
 from sys import exit
 from cell import *
 from messages import *
-
+import sys
 SCREEN_HEIGHT, SCREEN_WIDTH = 700, 1300
 CELL_HEIGHT, CELL_WIDTH = 20, 20
 HEIGHT_PAD, SIDE_PAD = 200, 200
 CELL_COLOR = (0, 100, 255)
 ROWS, COLS = 0, 0
+sys.setrecursionlimit(2000)
+def DFS(curr_cell, end_cell, visited, screen, isFirst = True):
+    # Base case
+    if curr_cell is None or (curr_cell.row, curr_cell.col) in visited:
+        return False
+    if curr_cell == end_cell:
+        return True
+
+    # Mark we have visited the cell
+    visited.add((curr_cell.row, curr_cell.col))
+    if not isFirst:
+        curr_cell.cell_surf.fill('Pink')
+    isFirst = False
+    screen.blit(curr_cell.cell_surf, curr_cell.cell_surf_rect)
+    pygame.display.update()
+    pygame.time.delay(20)
+
+
+
+
+    return DFS(curr_cell.top, end_cell, visited,screen, isFirst) or \
+           DFS(curr_cell.right, end_cell, visited,screen, isFirst) or \
+           DFS(curr_cell.bottom, end_cell, visited,screen, isFirst) or \
+           DFS(curr_cell.left, end_cell, visited,screen, isFirst)
+
+
+
+
+
+
 
 def main():
 
@@ -29,7 +61,7 @@ def main():
 
     # Visualizer status
     is_placing_s_point, is_placing_e_point = True, False
-    is_placing_obstacles = False
+    is_placing_obstacles, is_visualizing = False, False
 
 
     # Create cells
@@ -78,15 +110,6 @@ def main():
                             visited.add((obs.row, obs.col))
 
 
-
-
-
-
-
-
-
-
-
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     if is_placing_s_point and starting_point_surf is not None:
@@ -95,7 +118,10 @@ def main():
                     elif is_placing_e_point and end_point_surf is not None:
                         is_placing_e_point = False
                         is_placing_obstacles = True
-                    # elif is_placing_obstacles:
+                    elif is_placing_obstacles:
+                        is_placing_obstacles = False
+                        is_visualizing = True
+
 
 
 
@@ -119,9 +145,22 @@ def main():
             for obs in obstacles:
                 screen.blit(obs.cell_surf, (cells[obs.row][obs.col].pos_x, cells[obs.row][obs.col].pos_y))
         # Draw the message when the user is placing obstacles
-        if  is_placing_obstacles:
+        if is_placing_obstacles:
             drawTextOnObstacleScreen(screen)
 
+        # Visulize the algorithm
+        if is_visualizing:
+            # Visualize DFS
+            isEndPointReached = DFS(cells[s_row][s_col], cells[e_row][e_col], visited, screen)
+            is_visualizing = False
+        if not is_visualizing and not is_placing_s_point and not is_placing_e_point and not is_placing_obstacles:
+            for row, col in visited:
+                cell = cells[row][col]
+                screen.blit(cell.cell_surf,cell.cell_surf_rect)
+
+
+
+        # print(sys.getrecursionlimit())
 
 
 
