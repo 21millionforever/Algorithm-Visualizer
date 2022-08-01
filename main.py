@@ -34,69 +34,31 @@ def DFS(curr_cell, end_cell, visited, screen, isFirst = True):
 def BFS(curr_cell, end_cell, visited, screen):
     q = deque()
     q.append(curr_cell)
-
+    visited.add((curr_cell.row, curr_cell.col))
     while q:
         curr_cell = q.popleft()
+
         # Base case
         if (curr_cell.row == end_cell.row and curr_cell.col == end_cell.col):
             return True
-        visited.add((curr_cell.row, curr_cell.col))
 
         if curr_cell.top and (curr_cell.top.row, curr_cell.top.col) not in visited:
             q.append(curr_cell.top)
+            visited.add((curr_cell.top.row, curr_cell.top.col))
         if curr_cell.right and (curr_cell.right.row, curr_cell.right.col) not in visited:
             q.append(curr_cell.right)
+            visited.add((curr_cell.right.row, curr_cell.right.col))
         if curr_cell.bottom and (curr_cell.bottom.row, curr_cell.bottom.col) not in visited:
             q.append(curr_cell.bottom)
+            visited.add((curr_cell.bottom.row, curr_cell.bottom.col))
         if curr_cell.left and (curr_cell.left.row, curr_cell.left.col) not in visited:
             q.append(curr_cell.left)
+            visited.add((curr_cell.left.row, curr_cell.left.col))
         curr_cell.cell_surf.fill('Pink')
         screen.blit(curr_cell.cell_surf, curr_cell.cell_surf_rect)
         pygame.display.update()
-        pygame.time.delay(1)
+        pygame.time.delay(20)
     return False
-
-    # q = deque()
-    # q.append((curr_cell.row, curr_cell.col))
-    #
-    # while q:
-    #     curr_row, curr_col = q.popleft()
-    #
-    #     # Base case
-    #     if curr_row == end_cell.row and curr_col == end_cell.col:
-    #         return True
-    #     visited.add((curr_row, curr_col))
-    #
-    #     for t in [(1,0),(-1,0),(0,1),(0,-1)]:
-    #         if curr_row + t[0] < 0 or curr_row + t[0] >= len(cells) or curr_col + t[1] < 0 or curr_col + t[0] >= len(cells[0]) or \
-    #             (curr_row + t[0], curr_col + t[1]) in visited:
-    #             continue
-    #         else:
-    #             q.append((curr_row + t[0], curr_col + t[1]))
-    #
-    #     screen.blit(cells[curr_row][curr_col].cell_surf, cells[curr_row][curr_col].cell_surf_rect)
-    #     pygame.display.update()
-    #     pygame.time.delay(2)
-    # return False
-
-
-    # q = []
-    # while q:
-    #     q_len = len(q)
-    #     for i in range(q_len):
-    #         curr_cell = q[i]
-    #         if (curr_cell.row == end_cell.row and curr_cell.col == end_cell.col):
-    #             return True
-    #         visited.add((curr_cell.row, curr_cell.col))
-    #         if curr_cell.top and (curr_cell.top.row, curr_cell.top.col) not in visited:
-    #             q.append(curr_cell.top)
-    #         if curr_cell.right and (curr_cell.right.row, curr_cell.right.col) not in visited:
-    #             q.append(curr_cell.right)
-    #         if curr_cell.bottom and (curr_cell.bottom.row, curr_cell.bottom.col) not in visited:
-    #             q.append(curr_cell.bottom)
-    #         if curr_cell.left and (curr_cell.left.row, curr_cell.left.col) not in visited:
-    #             q.append(curr_cell.left)
-
 
 
 def main():
@@ -247,20 +209,6 @@ def main():
             for row, col in visited:
                 cell = cells[row][col]
                 screen.blit(cell.cell_surf,cell.cell_surf_rect)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         clock.tick(60)

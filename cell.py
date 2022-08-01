@@ -3,7 +3,7 @@ import pygame
 
 class Cell:
     def __init__(self):
-        self.left, self.right = None, None
+        self.left, self.right = None, None # Cell on the left and right
         self.top, self.bottom = None, None
         self.row, self.col = None, None      # 0-indexed
         self.cell_surf, self.cell_surf_rect = None, None
