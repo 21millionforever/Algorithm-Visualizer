@@ -27,17 +27,10 @@ def DFS(curr_cell, end_cell, visited, screen, isFirst = True):
     pygame.display.update()
     pygame.time.delay(20)
 
-
-
-
     return DFS(curr_cell.top, end_cell, visited,screen, isFirst) or \
            DFS(curr_cell.right, end_cell, visited,screen, isFirst) or \
-           DFS(curr_cell.bottom, end_cell, visited,screen, isFirst) or \
-           DFS(curr_cell.left, end_cell, visited,screen, isFirst)
-
-
-
-
+           DFS(curr_cell.left, end_cell, visited, screen, isFirst) or \
+           DFS(curr_cell.bottom, end_cell, visited, screen, isFirst)
 
 
 
@@ -160,7 +153,6 @@ def main():
 
 
 
-        # print(sys.getrecursionlimit())
 
 
 
