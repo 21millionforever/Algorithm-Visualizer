@@ -1,6 +1,5 @@
-import time
-
-import pygame
+from collections import deque
+# import pygame
 from sys import exit
 from cell import *
 from messages import *
@@ -32,6 +31,72 @@ def DFS(curr_cell, end_cell, visited, screen, isFirst = True):
            DFS(curr_cell.left, end_cell, visited, screen, isFirst) or \
            DFS(curr_cell.bottom, end_cell, visited, screen, isFirst)
 
+def BFS(curr_cell, end_cell, visited, screen):
+    q = deque()
+    q.append(curr_cell)
+
+    while q:
+        curr_cell = q.popleft()
+        # Base case
+        if (curr_cell.row == end_cell.row and curr_cell.col == end_cell.col):
+            return True
+        visited.add((curr_cell.row, curr_cell.col))
+
+        if curr_cell.top and (curr_cell.top.row, curr_cell.top.col) not in visited:
+            q.append(curr_cell.top)
+        if curr_cell.right and (curr_cell.right.row, curr_cell.right.col) not in visited:
+            q.append(curr_cell.right)
+        if curr_cell.bottom and (curr_cell.bottom.row, curr_cell.bottom.col) not in visited:
+            q.append(curr_cell.bottom)
+        if curr_cell.left and (curr_cell.left.row, curr_cell.left.col) not in visited:
+            q.append(curr_cell.left)
+        curr_cell.cell_surf.fill('Pink')
+        screen.blit(curr_cell.cell_surf, curr_cell.cell_surf_rect)
+        pygame.display.update()
+        pygame.time.delay(1)
+    return False
+
+    # q = deque()
+    # q.append((curr_cell.row, curr_cell.col))
+    #
+    # while q:
+    #     curr_row, curr_col = q.popleft()
+    #
+    #     # Base case
+    #     if curr_row == end_cell.row and curr_col == end_cell.col:
+    #         return True
+    #     visited.add((curr_row, curr_col))
+    #
+    #     for t in [(1,0),(-1,0),(0,1),(0,-1)]:
+    #         if curr_row + t[0] < 0 or curr_row + t[0] >= len(cells) or curr_col + t[1] < 0 or curr_col + t[0] >= len(cells[0]) or \
+    #             (curr_row + t[0], curr_col + t[1]) in visited:
+    #             continue
+    #         else:
+    #             q.append((curr_row + t[0], curr_col + t[1]))
+    #
+    #     screen.blit(cells[curr_row][curr_col].cell_surf, cells[curr_row][curr_col].cell_surf_rect)
+    #     pygame.display.update()
+    #     pygame.time.delay(2)
+    # return False
+
+
+    # q = []
+    # while q:
+    #     q_len = len(q)
+    #     for i in range(q_len):
+    #         curr_cell = q[i]
+    #         if (curr_cell.row == end_cell.row and curr_cell.col == end_cell.col):
+    #             return True
+    #         visited.add((curr_cell.row, curr_cell.col))
+    #         if curr_cell.top and (curr_cell.top.row, curr_cell.top.col) not in visited:
+    #             q.append(curr_cell.top)
+    #         if curr_cell.right and (curr_cell.right.row, curr_cell.right.col) not in visited:
+    #             q.append(curr_cell.right)
+    #         if curr_cell.bottom and (curr_cell.bottom.row, curr_cell.bottom.col) not in visited:
+    #             q.append(curr_cell.bottom)
+    #         if curr_cell.left and (curr_cell.left.row, curr_cell.left.col) not in visited:
+    #             q.append(curr_cell.left)
+
 
 
 def main():
@@ -40,6 +105,16 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
+
+    # Menu screen
+    dfs_button = pygame.image.load('Art/Buttons/DFS_button.png').convert_alpha()
+    dfs_button_rect = dfs_button.get_rect(center = (650,100))
+
+    bfs_button = pygame.image.load('Art/Buttons/BFS_button.png').convert_alpha()
+    bfs_button_rect = bfs_button.get_rect(center = (650,200))
+
+    # Chosen algorithm
+    chosen_algorithm = None
 
     # Starting point surface
     starting_point_surf = None
@@ -53,7 +128,8 @@ def main():
 
 
     # Visualizer status
-    is_placing_s_point, is_placing_e_point = True, False
+    is_menu_screen = True
+    is_placing_s_point, is_placing_e_point = False, False
     is_placing_obstacles, is_visualizing = False, False
 
 
@@ -64,8 +140,11 @@ def main():
     while True:
         # Background
         screen.fill('White')
-        # Drawing cells
-        DrawCells(cells, screen, CELL_COLOR)
+
+
+        if is_menu_screen:
+            screen.blit(dfs_button,dfs_button_rect)
+            screen.blit(bfs_button, bfs_button_rect)
 
         # Handle different events
         for event in pygame.event.get():
@@ -74,7 +153,17 @@ def main():
                 exit()
             # Place starting and end point
             if event.type == pygame.MOUSEBUTTONDOWN:
-                if isPosWithinCells(event.pos[0], event.pos[1], SCREEN_HEIGHT, SCREEN_WIDTH, SIDE_PAD, HEIGHT_PAD):
+                if is_menu_screen:
+                    if dfs_button_rect.collidepoint((event.pos[0], event.pos[1])):
+                        chosen_algorithm = 'dfs'
+                        is_menu_screen = False
+                        is_placing_s_point = True
+                    elif bfs_button_rect.collidepoint((event.pos[0], event.pos[1])):
+                        chosen_algorithm = 'bfs'
+                        is_menu_screen = False
+                        is_placing_s_point = True
+
+                elif isPosWithinCells(event.pos[0], event.pos[1], SCREEN_HEIGHT, SCREEN_WIDTH, SIDE_PAD, HEIGHT_PAD):
                     pos_x, pos_y = event.pos[0], event.pos[1]
                     r, c = getRowAndCol(pos_x, pos_y, SIDE_PAD, HEIGHT_PAD, CELL_WIDTH, CELL_HEIGHT)
                     # Get starting point
@@ -116,8 +205,9 @@ def main():
                         is_visualizing = True
 
 
-
-
+        # Drawing cells
+        if not is_menu_screen:
+            DrawCells(cells, screen, CELL_COLOR)
 
         # Draw the starting point
         if starting_point_surf is not None:
@@ -144,8 +234,15 @@ def main():
         # Visulize the algorithm
         if is_visualizing:
             # Visualize DFS
-            isEndPointReached = DFS(cells[s_row][s_col], cells[e_row][e_col], visited, screen)
-            is_visualizing = False
+            if chosen_algorithm == 'dfs':
+                isEndPointReached = DFS(cells[s_row][s_col], cells[e_row][e_col], visited, screen)
+                # isEndPointReached = BFS(cells[s_row][s_col], cells[e_row][e_col], visited, screen)
+                is_visualizing = False
+            # Visualize BFD
+            elif chosen_algorithm == 'bfs':
+                isEndPointReached = BFS(cells[s_row][s_col], cells[e_row][e_col], visited, screen)
+
+
         if not is_visualizing and not is_placing_s_point and not is_placing_e_point and not is_placing_obstacles:
             for row, col in visited:
                 cell = cells[row][col]

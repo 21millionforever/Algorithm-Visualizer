@@ -4,6 +4,10 @@ import pygame
 pygame.font.init()
 text_font = pygame.font.SysFont('Normal text', 40)
 
+# Start menu messgaes
+
+
+
 # Messages when the user is placing the starting point
 placing_s_message = text_font.render('Please choose a starting point by clicking on any of the cells', True, 'Red')
 placeing_s_message_rect = placing_s_message.get_rect(center=(650, 50))
@@ -34,6 +38,8 @@ finish_o_messgae_rect_1 = finish_o_messgae_1.get_rect(center=(650, 640))
 
 finish_o_messgae_2 = text_font.render('click Square to visualize the algorithm', True, 'Black')
 finish_o_messgae_rect_2 = finish_o_messgae_2.get_rect(center=(650, 670))
+
+
 
 
 
