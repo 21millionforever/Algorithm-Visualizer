@@ -10,26 +10,72 @@ HEIGHT_PAD, SIDE_PAD = 200, 200
 CELL_COLOR = (0, 100, 255)
 ROWS, COLS = 0, 0
 sys.setrecursionlimit(2000)
-def DFS(curr_cell, end_cell, visited, screen, isFirst = True):
+def DFS_finding_path(curr_cell, end_cell, visited, screen, path):
     # Base case
     if curr_cell is None or (curr_cell.row, curr_cell.col) in visited:
-        return False
+        return None
     if curr_cell == end_cell:
-        return True
+        new_path = path + [curr_cell]
+        return new_path
 
     # Mark we have visited the cell
     visited.add((curr_cell.row, curr_cell.col))
-    if not isFirst:
-        curr_cell.cell_surf.fill('Pink')
-    isFirst = False
+    curr_cell.cell_surf.fill('Pink')
     screen.blit(curr_cell.cell_surf, curr_cell.cell_surf_rect)
     pygame.display.update()
     pygame.time.delay(20)
 
-    return DFS(curr_cell.top, end_cell, visited,screen, isFirst) or \
-           DFS(curr_cell.right, end_cell, visited,screen, isFirst) or \
-           DFS(curr_cell.left, end_cell, visited, screen, isFirst) or \
-           DFS(curr_cell.bottom, end_cell, visited, screen, isFirst)
+    new_path = path + [curr_cell]
+
+    next_cells = [curr_cell.top, curr_cell.right, curr_cell.left, curr_cell.bottom]
+    result = None
+    for next_cell in next_cells:
+        result = DFS_finding_path(next_cell, end_cell, visited, screen, new_path)
+        if result is not None:
+            break
+    return result
+
+    # result = DFS(curr_cell.top, end_cell, visited, screen, new_path)
+    # if result != None:
+    #     return result
+    # result = DFS(curr_cell.right, end_cell, visited, screen, new_path)
+    # if result != None:
+    #     return result
+    # result = DFS(curr_cell.left, end_cell, visited, screen, new_path)
+    # if result != None:
+    #     return result
+    # result = DFS(curr_cell.bottom, end_cell, visited, screen, new_path)
+    # if result != None:
+    #     return result
+
+    # # Base case
+    # if curr_cell is None or (curr_cell.row, curr_cell.col) in visited:
+    #     return False
+    # if curr_cell == end_cell:
+    #     return True
+    #
+    # # Mark we have visited the cell
+    # visited.add((curr_cell.row, curr_cell.col))
+    # curr_cell.cell_surf.fill('Pink')
+    # screen.blit(curr_cell.cell_surf, curr_cell.cell_surf_rect)
+    # pygame.display.update()
+    # pygame.time.delay(20)
+    #
+    # return DFS(curr_cell.top, end_cell, visited,screen) or \
+    #        DFS(curr_cell.right, end_cell, visited,screen) or \
+    #        DFS(curr_cell.left, end_cell, visited, screen) or \
+    #        DFS(curr_cell.bottom, end_cell, visited, screen)
+
+def path_animation(path, screen):
+    for cell in path:
+        cell.cell_surf.fill('Green')
+        screen.blit(cell.cell_surf, cell.cell_surf_rect)
+        pygame.display.update()
+        pygame.time.delay(20)
+
+
+
+
 
 def BFS(curr_cell, end_cell, visited, screen):
     q = deque()
@@ -60,6 +106,9 @@ def BFS(curr_cell, end_cell, visited, screen):
         pygame.time.delay(20)
     return False
 
+
+
+# def placingObstacles(s_pos,e_pos,mouse_pos, cells):
 
 def main():
 
@@ -113,8 +162,10 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-            # Place starting and end point
+            # Place starting, end point and obstacles
             if event.type == pygame.MOUSEBUTTONDOWN:
+                # if pygame.mouse.get_pressed()[0]:
+                #     print("Yes")
                 if is_menu_screen:
                     if dfs_button_rect.collidepoint((event.pos[0], event.pos[1])):
                         chosen_algorithm = 'dfs'
@@ -145,6 +196,11 @@ def main():
                         end_point_surf.fill('Blue')
 
                     # Get obstacles
+                    # if is_placing_obstacles:
+
+
+
+
                     if is_placing_obstacles and not (r == s_row and c == s_col) and not (r == e_row and c == e_col):
                         o_row, o_col = r, c
                         obs = cells[o_row][o_col]
@@ -197,8 +253,10 @@ def main():
         if is_visualizing:
             # Visualize DFS
             if chosen_algorithm == 'dfs':
-                isEndPointReached = DFS(cells[s_row][s_col], cells[e_row][e_col], visited, screen)
-                # isEndPointReached = BFS(cells[s_row][s_col], cells[e_row][e_col], visited, screen)
+                path = DFS_finding_path(cells[s_row][s_col], cells[e_row][e_col], visited, screen, [])
+                if path is not None:
+                    path_animation(path, screen)
+
                 is_visualizing = False
             # Visualize BFD
             elif chosen_algorithm == 'bfs':
