@@ -108,7 +108,6 @@ def BFS(curr_cell, end_cell, visited, screen):
 
 
 
-# def placingObstacles(s_pos,e_pos,mouse_pos, cells):
 
 def main():
 
@@ -181,33 +180,24 @@ def main():
                     r, c = getRowAndCol(pos_x, pos_y, SIDE_PAD, HEIGHT_PAD, CELL_WIDTH, CELL_HEIGHT)
                     # Get starting point
                     if is_placing_s_point:
-                        # pos_x, pos_y = event.pos[0], event.pos[1]
-                        # s_row, s_col = getRowAndCol(pos_x, pos_y, SIDE_PAD, HEIGHT_PAD, CELL_WIDTH, CELL_HEIGHT)
                         s_row, s_col = r, c
                         starting_point_surf = cells[s_row][s_col].cell_surf
                         starting_point_surf.fill('Red')
 
                     # Get end point
                     if is_placing_e_point and not (r == s_row and c == s_col):
-                        # pos_x, pos_y = event.pos[0], event.pos[1]
-                        # e_row, e_col = getRowAndCol(pos_x, pos_y, SIDE_PAD, HEIGHT_PAD, CELL_WIDTH, CELL_HEIGHT)
                         e_row, e_col = r, c
                         end_point_surf = cells[e_row][e_col].cell_surf
                         end_point_surf.fill('Blue')
 
                     # Get obstacles
-                    # if is_placing_obstacles:
-
-
-
-
-                    if is_placing_obstacles and not (r == s_row and c == s_col) and not (r == e_row and c == e_col):
-                        o_row, o_col = r, c
-                        obs = cells[o_row][o_col]
-                        if (obs.row, obs.col) not in visited:
-                            obs.cell_surf.fill('Black')
-                            obstacles.add(obs)
-                            visited.add((obs.row, obs.col))
+                    # if is_placing_obstacles and not (r == s_row and c == s_col) and not (r == e_row and c == e_col):
+                    #     o_row, o_col = r, c
+                    #     obs = cells[o_row][o_col]
+                    #     if (obs.row, obs.col) not in visited:
+                    #         obs.cell_surf.fill('Black')
+                    #         obstacles.add(obs)
+                    #         visited.add((obs.row, obs.col))
 
 
             if event.type == pygame.KEYDOWN:
@@ -222,6 +212,19 @@ def main():
                         is_placing_obstacles = False
                         is_visualizing = True
 
+        click = pygame.mouse.get_pressed()[0]
+        r, c = getRowAndCol(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], SIDE_PAD, HEIGHT_PAD, CELL_WIDTH, CELL_HEIGHT)
+        if click:
+            if is_placing_obstacles and \
+                isPosWithinCells(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], SCREEN_HEIGHT, SCREEN_WIDTH, SIDE_PAD, HEIGHT_PAD) and \
+                not (r == s_row and c == s_col) and not (r == e_row and c == e_col):
+                o_row, o_col = r, c
+                # print(str(o_row) + ',' + str(o_col))
+                obs = cells[o_row][o_col]
+                if (obs.row, obs.col) not in visited:
+                    obs.cell_surf.fill('Black')
+                    obstacles.add(obs)
+                    visited.add((obs.row, obs.col))
 
         # Drawing cells
         if not is_menu_screen:
