@@ -40,6 +40,9 @@ finish_o_messgae_2 = text_font.render('click Square to visualize the algorithm',
 finish_o_messgae_rect_2 = finish_o_messgae_2.get_rect(center=(650, 670))
 
 
+# Message when the visualization is finished
+after_vis_mess = text_font.render('Click Square to return to the menu screen', True, 'Black')
+after_vis_mess_rect = after_vis_mess.get_rect(center=(650, 50))
 
 
 
@@ -60,3 +63,6 @@ def drawTextOnObstacleScreen(screen):
     screen.blit(placing_o_messgae, placing_o_messgae_rect)
     screen.blit(finish_o_messgae_1, finish_o_messgae_rect_1)
     screen.blit(finish_o_messgae_2, finish_o_messgae_rect_2)
+
+def drawTextOnAfterVisScreen(screen):
+    screen.blit(after_vis_mess, after_vis_mess_rect)

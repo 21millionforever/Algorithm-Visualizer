@@ -35,79 +35,75 @@ def DFS_finding_path(curr_cell, end_cell, visited, screen, path):
             break
     return result
 
-    # result = DFS(curr_cell.top, end_cell, visited, screen, new_path)
-    # if result != None:
-    #     return result
-    # result = DFS(curr_cell.right, end_cell, visited, screen, new_path)
-    # if result != None:
-    #     return result
-    # result = DFS(curr_cell.left, end_cell, visited, screen, new_path)
-    # if result != None:
-    #     return result
-    # result = DFS(curr_cell.bottom, end_cell, visited, screen, new_path)
-    # if result != None:
-    #     return result
 
-    # # Base case
-    # if curr_cell is None or (curr_cell.row, curr_cell.col) in visited:
-    #     return False
-    # if curr_cell == end_cell:
-    #     return True
-    #
-    # # Mark we have visited the cell
-    # visited.add((curr_cell.row, curr_cell.col))
-    # curr_cell.cell_surf.fill('Pink')
-    # screen.blit(curr_cell.cell_surf, curr_cell.cell_surf_rect)
-    # pygame.display.update()
-    # pygame.time.delay(20)
-    #
-    # return DFS(curr_cell.top, end_cell, visited,screen) or \
-    #        DFS(curr_cell.right, end_cell, visited,screen) or \
-    #        DFS(curr_cell.left, end_cell, visited, screen) or \
-    #        DFS(curr_cell.bottom, end_cell, visited, screen)
+# def BFS_finding_path(curr_cell, end_cell, visited, screen):
+#     q = deque()
+#     q.append(curr_cell)
+#     visited.add((curr_cell.row, curr_cell.col))
+#     while q:
+#         curr_cell = q.popleft()
+#
+#         # Base case
+#         if (curr_cell.row == end_cell.row and curr_cell.col == end_cell.col):
+#             return True
+#
+#         if curr_cell.top and (curr_cell.top.row, curr_cell.top.col) not in visited:
+#             q.append(curr_cell.top)
+#             visited.add((curr_cell.top.row, curr_cell.top.col))
+#         if curr_cell.right and (curr_cell.right.row, curr_cell.right.col) not in visited:
+#             q.append(curr_cell.right)
+#             visited.add((curr_cell.right.row, curr_cell.right.col))
+#         if curr_cell.bottom and (curr_cell.bottom.row, curr_cell.bottom.col) not in visited:
+#             q.append(curr_cell.bottom)
+#             visited.add((curr_cell.bottom.row, curr_cell.bottom.col))
+#         if curr_cell.left and (curr_cell.left.row, curr_cell.left.col) not in visited:
+#             q.append(curr_cell.left)
+#             visited.add((curr_cell.left.row, curr_cell.left.col))
+#         curr_cell.cell_surf.fill('Pink')
+#         screen.blit(curr_cell.cell_surf, curr_cell.cell_surf_rect)
+#         pygame.display.update()
+#         pygame.time.delay(20)
+#     return False
+
+def BFS_finding_path(curr_cell, end_cell, visited, screen):
+    q = deque()
+    q.append((curr_cell,[curr_cell]))
+    visited.add((curr_cell.row, curr_cell.col))
+    while q:
+        curr_cell, temp_path = q.popleft()
+
+        # Base case
+        if (curr_cell.row == end_cell.row and curr_cell.col == end_cell.col):
+            while q:
+                c, p = q.popleft()
+                visited.remove((c.row, c.col))
+
+            return temp_path
+
+        if curr_cell.top and (curr_cell.top.row, curr_cell.top.col) not in visited:
+            q.append((curr_cell.top, temp_path + [curr_cell.top]))
+            visited.add((curr_cell.top.row, curr_cell.top.col))
+        if curr_cell.right and (curr_cell.right.row, curr_cell.right.col) not in visited:
+            q.append((curr_cell.right, temp_path + [curr_cell.right]))
+            visited.add((curr_cell.right.row, curr_cell.right.col))
+        if curr_cell.bottom and (curr_cell.bottom.row, curr_cell.bottom.col) not in visited:
+            q.append((curr_cell.bottom, temp_path + [curr_cell.bottom]))
+            visited.add((curr_cell.bottom.row, curr_cell.bottom.col))
+        if curr_cell.left and (curr_cell.left.row, curr_cell.left.col) not in visited:
+            q.append((curr_cell.left, temp_path + [curr_cell.left]))
+            visited.add((curr_cell.left.row, curr_cell.left.col))
+        curr_cell.cell_surf.fill('Pink')
+        screen.blit(curr_cell.cell_surf, curr_cell.cell_surf_rect)
+        pygame.display.update()
+        pygame.time.delay(20)
+    return None
 
 def path_animation(path, screen):
     for cell in path:
         cell.cell_surf.fill('Green')
         screen.blit(cell.cell_surf, cell.cell_surf_rect)
         pygame.display.update()
-        pygame.time.delay(20)
-
-
-
-
-
-def BFS(curr_cell, end_cell, visited, screen):
-    q = deque()
-    q.append(curr_cell)
-    visited.add((curr_cell.row, curr_cell.col))
-    while q:
-        curr_cell = q.popleft()
-
-        # Base case
-        if (curr_cell.row == end_cell.row and curr_cell.col == end_cell.col):
-            return True
-
-        if curr_cell.top and (curr_cell.top.row, curr_cell.top.col) not in visited:
-            q.append(curr_cell.top)
-            visited.add((curr_cell.top.row, curr_cell.top.col))
-        if curr_cell.right and (curr_cell.right.row, curr_cell.right.col) not in visited:
-            q.append(curr_cell.right)
-            visited.add((curr_cell.right.row, curr_cell.right.col))
-        if curr_cell.bottom and (curr_cell.bottom.row, curr_cell.bottom.col) not in visited:
-            q.append(curr_cell.bottom)
-            visited.add((curr_cell.bottom.row, curr_cell.bottom.col))
-        if curr_cell.left and (curr_cell.left.row, curr_cell.left.col) not in visited:
-            q.append(curr_cell.left)
-            visited.add((curr_cell.left.row, curr_cell.left.col))
-        curr_cell.cell_surf.fill('Pink')
-        screen.blit(curr_cell.cell_surf, curr_cell.cell_surf_rect)
-        pygame.display.update()
-        pygame.time.delay(20)
-    return False
-
-
-
+        pygame.time.delay(40)
 
 def main():
 
@@ -141,6 +137,7 @@ def main():
     is_menu_screen = True
     is_placing_s_point, is_placing_e_point = False, False
     is_placing_obstacles, is_visualizing = False, False
+    after_visulization = False
 
 
     # Create cells
@@ -184,6 +181,7 @@ def main():
                         starting_point_surf = cells[s_row][s_col].cell_surf
                         starting_point_surf.fill('Red')
 
+
                     # Get end point
                     if is_placing_e_point and not (r == s_row and c == s_col):
                         e_row, e_col = r, c
@@ -211,10 +209,18 @@ def main():
                     elif is_placing_obstacles:
                         is_placing_obstacles = False
                         is_visualizing = True
+                    elif after_visulization:
+                        after_visulization = False
+                        is_menu_screen = True
+                        starting_point_surf = None
+                        end_point_surf = None
+                        obstacles = set()
+                        visited = set()
 
         click = pygame.mouse.get_pressed()[0]
         r, c = getRowAndCol(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], SIDE_PAD, HEIGHT_PAD, CELL_WIDTH, CELL_HEIGHT)
         if click:
+            # Placing obstacles
             if is_placing_obstacles and \
                 isPosWithinCells(pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], SCREEN_HEIGHT, SCREEN_WIDTH, SIDE_PAD, HEIGHT_PAD) and \
                 not (r == s_row and c == s_col) and not (r == e_row and c == e_col):
@@ -261,15 +267,29 @@ def main():
                     path_animation(path, screen)
 
                 is_visualizing = False
+                after_visulization = True
             # Visualize BFD
             elif chosen_algorithm == 'bfs':
-                isEndPointReached = BFS(cells[s_row][s_col], cells[e_row][e_col], visited, screen)
+                # Old version
+                # isEndPointReached = BFS_finding_path(cells[s_row][s_col], cells[e_row][e_col], visited, screen)
+                # is_visualizing = False
+                # after_visulization = True
+
+                # test version
+                path = BFS_finding_path(cells[s_row][s_col], cells[e_row][e_col], visited, screen)
+                if path is not None:
+                    path_animation(path, screen)
+                is_visualizing = False
+                after_visulization = True
 
 
-        if not is_visualizing and not is_placing_s_point and not is_placing_e_point and not is_placing_obstacles:
+        # if not is_visualizing and not is_placing_s_point and not is_placing_e_point and not is_placing_obstacles:
+        if after_visulization:
+            drawTextOnAfterVisScreen(screen)
             for row, col in visited:
                 cell = cells[row][col]
                 screen.blit(cell.cell_surf,cell.cell_surf_rect)
+
 
 
         clock.tick(60)

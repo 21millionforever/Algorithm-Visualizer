@@ -18,7 +18,7 @@ def CreateCells(screen_height, screen_width, cell_height, cell_width, height_pad
             pos_x, pos_y = col * cell_width, row * cell_height
 
             # cell_rect = pygame.Rect(side_pad // 2 + pos_x, height_pad // 2 + pos_y, 20, 20)
-            cell_surf = pygame.Surface((20,20))
+            cell_surf = pygame.Surface((19,19))
             cell_surf_rect = cell_surf.get_rect(topleft = (side_pad // 2 + pos_x, height_pad // 2 + pos_y))
 
             c = Cell()
