@@ -1,3 +1,4 @@
+import heapq
 from collections import deque
 # import pygame
 from sys import exit
@@ -9,6 +10,8 @@ CELL_HEIGHT, CELL_WIDTH = 20, 20
 HEIGHT_PAD, SIDE_PAD = 200, 200
 CELL_COLOR = (0, 100, 255)
 ROWS, COLS = 0, 0
+FIDING_PATH_SPEED = 5
+SHOWING_PATH_SPEED = 10
 sys.setrecursionlimit(2000)
 def DFS_finding_path(curr_cell, end_cell, visited, screen, path):
     # Base case
@@ -23,7 +26,7 @@ def DFS_finding_path(curr_cell, end_cell, visited, screen, path):
     curr_cell.cell_surf.fill('Pink')
     screen.blit(curr_cell.cell_surf, curr_cell.cell_surf_rect)
     pygame.display.update()
-    pygame.time.delay(20)
+    pygame.time.delay(FIDING_PATH_SPEED)
 
     new_path = path + [curr_cell]
 
@@ -36,34 +39,6 @@ def DFS_finding_path(curr_cell, end_cell, visited, screen, path):
     return result
 
 
-# def BFS_finding_path(curr_cell, end_cell, visited, screen):
-#     q = deque()
-#     q.append(curr_cell)
-#     visited.add((curr_cell.row, curr_cell.col))
-#     while q:
-#         curr_cell = q.popleft()
-#
-#         # Base case
-#         if (curr_cell.row == end_cell.row and curr_cell.col == end_cell.col):
-#             return True
-#
-#         if curr_cell.top and (curr_cell.top.row, curr_cell.top.col) not in visited:
-#             q.append(curr_cell.top)
-#             visited.add((curr_cell.top.row, curr_cell.top.col))
-#         if curr_cell.right and (curr_cell.right.row, curr_cell.right.col) not in visited:
-#             q.append(curr_cell.right)
-#             visited.add((curr_cell.right.row, curr_cell.right.col))
-#         if curr_cell.bottom and (curr_cell.bottom.row, curr_cell.bottom.col) not in visited:
-#             q.append(curr_cell.bottom)
-#             visited.add((curr_cell.bottom.row, curr_cell.bottom.col))
-#         if curr_cell.left and (curr_cell.left.row, curr_cell.left.col) not in visited:
-#             q.append(curr_cell.left)
-#             visited.add((curr_cell.left.row, curr_cell.left.col))
-#         curr_cell.cell_surf.fill('Pink')
-#         screen.blit(curr_cell.cell_surf, curr_cell.cell_surf_rect)
-#         pygame.display.update()
-#         pygame.time.delay(20)
-#     return False
 
 def BFS_finding_path(curr_cell, end_cell, visited, screen):
     q = deque()
@@ -95,7 +70,54 @@ def BFS_finding_path(curr_cell, end_cell, visited, screen):
         curr_cell.cell_surf.fill('Pink')
         screen.blit(curr_cell.cell_surf, curr_cell.cell_surf_rect)
         pygame.display.update()
-        pygame.time.delay(20)
+        pygame.time.delay(FIDING_PATH_SPEED)
+    return None
+
+def A_star_finding_path(curr_cell, end_cell, visited, cells, screen):
+    directions = [(1,0),(-1,0),(0,1),(0,-1)]
+    def get_estimate(curr_cell, end_cell):
+        return max(abs(end_cell.row-curr_cell.row), abs(end_cell.col-curr_cell.col))
+
+    def get_neighbours(curr_cell):
+        row, col = curr_cell.row, curr_cell.col
+        output = []
+        for r_dir, c_dir in directions:
+            new_row, new_col = row+r_dir, col+c_dir
+
+            if new_row < 0 or new_col < 0 or new_row >= len(cells) or new_col >= len(cells[0]) or (new_row, new_col) in visited:
+                continue
+
+            output.append(cells[new_row][new_col])
+        return output
+
+    queue = []
+    incremented_num = 0
+    queue.append((get_estimate(curr_cell,end_cell)+1, 1, incremented_num,curr_cell, [curr_cell]))
+    heapq.heapify(queue)
+    while queue:
+        estimate, distance, num, cell, temp_path = heapq.heappop(queue)
+
+        if cell == end_cell:
+            return temp_path
+        if (cell.row, cell.col) in visited:
+            continue
+
+        # Animation
+        cell.cell_surf.fill('Pink')
+        screen.blit(cell.cell_surf, cell.cell_surf_rect)
+        pygame.display.update()
+        pygame.time.delay(FIDING_PATH_SPEED)
+
+
+        visited.add((cell.row,cell.col))
+        neighbours = get_neighbours(cell)
+
+        for cell in neighbours:
+            incremented_num += 1
+            # visited.add((cell.row, cell.col))
+            copy_path = temp_path.copy()
+            copy_path.append(cell)
+            heapq.heappush(queue, (get_estimate(cell,end_cell)+distance+1, distance+1, incremented_num, cell, copy_path))
     return None
 
 def path_animation(path, screen):
@@ -103,7 +125,7 @@ def path_animation(path, screen):
         cell.cell_surf.fill('Green')
         screen.blit(cell.cell_surf, cell.cell_surf_rect)
         pygame.display.update()
-        pygame.time.delay(40)
+        pygame.time.delay(SHOWING_PATH_SPEED)
 
 def main():
 
@@ -118,6 +140,9 @@ def main():
 
     bfs_button = pygame.image.load('Art/Buttons/BFS_button.png').convert_alpha()
     bfs_button_rect = bfs_button.get_rect(center = (650,200))
+
+    a_star_button = pygame.image.load('Art/Buttons/A*_button.png').convert_alpha()
+    a_star_button_rect = a_star_button.get_rect(center = (650,300))
 
     # Chosen algorithm
     chosen_algorithm = None
@@ -150,8 +175,10 @@ def main():
 
 
         if is_menu_screen:
+            # Display options in the menu screen
             screen.blit(dfs_button,dfs_button_rect)
             screen.blit(bfs_button, bfs_button_rect)
+            screen.blit(a_star_button,a_star_button_rect)
 
         # Handle different events
         for event in pygame.event.get():
@@ -169,6 +196,10 @@ def main():
                         is_placing_s_point = True
                     elif bfs_button_rect.collidepoint((event.pos[0], event.pos[1])):
                         chosen_algorithm = 'bfs'
+                        is_menu_screen = False
+                        is_placing_s_point = True
+                    elif a_star_button_rect.collidepoint((event.pos[0], event.pos[1])):
+                        chosen_algorithm = 'a_star'
                         is_menu_screen = False
                         is_placing_s_point = True
 
@@ -260,28 +291,29 @@ def main():
 
         # Visulize the algorithm
         if is_visualizing:
-            # Visualize DFS
+
             if chosen_algorithm == 'dfs':
                 path = DFS_finding_path(cells[s_row][s_col], cells[e_row][e_col], visited, screen, [])
                 if path is not None:
                     path_animation(path, screen)
 
-                is_visualizing = False
-                after_visulization = True
-            # Visualize BFD
-            elif chosen_algorithm == 'bfs':
-                # Old version
-                # isEndPointReached = BFS_finding_path(cells[s_row][s_col], cells[e_row][e_col], visited, screen)
                 # is_visualizing = False
                 # after_visulization = True
 
-                # test version
+            elif chosen_algorithm == 'bfs':
                 path = BFS_finding_path(cells[s_row][s_col], cells[e_row][e_col], visited, screen)
                 if path is not None:
                     path_animation(path, screen)
-                is_visualizing = False
-                after_visulization = True
 
+                # is_visualizing = False
+                # after_visulization = True
+            elif chosen_algorithm == 'a_star':
+                path = A_star_finding_path(cells[s_row][s_col], cells[e_row][e_col], visited, cells, screen)
+                if path is not None:
+                    path_animation(path, screen)
+
+            is_visualizing = False
+            after_visulization = True
 
         # if not is_visualizing and not is_placing_s_point and not is_placing_e_point and not is_placing_obstacles:
         if after_visulization:
